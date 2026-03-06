@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Проект "Комменты"</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="./favicon.ico">
+</head>
+
+<body>
+  <div class="container">
+    <ul class="comments">
+
+    </ul>
+    <div class="add-form">
+
+      <div class="quote-block" style="display: none;">
+        <div class="quote-header">
+          Ответ на комментарий: <span class="quote-author"></span>
+        </div>
+        <div class="quote-text"></div>
+      </div>
+      <input type="text" class="add-form-name" placeholder="Введите ваше имя" />
+      <textarea type="textarea" class="add-form-text" placeholder="Введите ваш комментарий" rows="4"></textarea>
+      <div class="add-form-row">
+        <button class="add-form-button">Написать</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./index.js">
+
+  </script>
+</body>
+
+</html>
