@@ -1,7 +1,6 @@
-import { comments } from "./data.js";
+import { comments, updateComments } from "./data.js";
 import { renderComments } from "./renderComments.js";
 import { escapeHtml } from "./escapeHtml.js";
-import { getCurrentDate } from "./date.js";
 
 export function initHandlers(elements) {
     const {
@@ -16,6 +15,7 @@ export function initHandlers(elements) {
 
     let replyingTo = null;
 
+    // Обработчик лайков и ответов на комментарии
     commentsList.addEventListener("click", (event) => {
         const likeButton = event.target.closest('[data-action="like"]');
 
@@ -26,10 +26,11 @@ export function initHandlers(elements) {
             const commentId = Number(commentElement.dataset.id);
             const comment = comments.find(c => c.id === commentId);
 
-            comment.isLiked ? comment.likes-- : comment.likes++;
-            comment.isLiked = !comment.isLiked;
-
-            renderComments(comments, commentsList);
+            if (comment) {
+                comment.isLiked ? comment.likes-- : comment.likes++;
+                comment.isLiked = !comment.isLiked;
+                renderComments(comments, commentsList);
+            }
             return;
         }
 
@@ -39,16 +40,17 @@ export function initHandlers(elements) {
         const commentId = Number(commentElement.dataset.id);
         const comment = comments.find(c => c.id === commentId);
 
-        replyingTo = commentId;
-
-        quoteBlock.style.display = "block";
-        quoteAuthor.textContent = comment.name;
-        quoteText.textContent = comment.text;
-
-        commentInput.value = `> ${comment.text}\n\n`;
-        commentInput.focus();
+        if (comment) {
+            replyingTo = commentId;
+            quoteBlock.style.display = "block";
+            quoteAuthor.textContent = comment.name;
+            quoteText.textContent = comment.text;
+            commentInput.value = `> ${comment.text}\n\n`;
+            commentInput.focus();
+        }
     });
 
+    // Обработчик добавления комментария
     addButton.addEventListener("click", () => {
         const name = nameInput.value.trim();
         const text = commentInput.value.trim();
@@ -58,22 +60,33 @@ export function initHandlers(elements) {
             return;
         }
 
-        const newComment = {
-            id: Date.now(),
-            name: escapeHtml(name),
-            date: getCurrentDate(),
-            text: escapeHtml(text).replaceAll("\n", "<br>"),
-            likes: 0,
-            isLiked: false,
-        };
+        if (name.length < 3 || text.length < 3) {
+            alert("Имя и текст комментария должны быть не короче 3 символов");
+            return;
+        }
 
-        comments.push(newComment);
+        // Блокируем кнопку на время отправки
+        addButton.disabled = true;
+        addButton.textContent = "Отправка...";
 
-        renderComments(comments, commentsList);
-
-        nameInput.value = "";
-        commentInput.value = "";
-        quoteBlock.style.display = "none";
-        replyingTo = null;
+        import("./api.js").then(({ postComment }) => {
+            postComment(escapeHtml(text).replaceAll("\n", "<br>"), escapeHtml(name))
+                .then((updatedComments) => {
+                    updateComments(updatedComments);
+                    renderComments(comments, commentsList);
+                    
+                    nameInput.value = '';
+                    commentInput.value = '';
+                    quoteBlock.style.display = "none";
+                    replyingTo = null;
+                })
+                .catch(error => {
+                    alert(error.message || "Не удалось добавить комментарий. Попробуйте снова.");
+                })
+                .finally(() => {
+                    addButton.disabled = false;
+                    addButton.textContent = "Написать";
+                });
+        });
     });
 }
