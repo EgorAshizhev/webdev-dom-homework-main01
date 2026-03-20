@@ -11,7 +11,10 @@ const quoteBlock = document.querySelector(".quote-block");
 const quoteAuthor = document.querySelector(".quote-author");
 const quoteText = document.querySelector(".quote-text");
 
-// Загружаем комментарии при старте
+// Показываем лоадер перед загрузкой
+commentsList.innerHTML = '<div style="text-align: center; padding: 20px;">Комментарии загружаются, подождите...</div>';
+
+
 fetchComments()
     .then((data) => {
         updateComments(data);
@@ -19,10 +22,9 @@ fetchComments()
     })
     .catch((error) => {
         console.error("Ошибка загрузки комментариев:", error);
-        alert("Не удалось загрузить комментарии. Попробуйте обновить страницу.");
+        commentsList.innerHTML = '<div style="text-align: center; padding: 20px; color: red;">Не удалось загрузить комментарии. Обновите страницу.</div>';
     });
 
-// Инициализируем обработчики
 initHandlers({
     nameInput,
     commentInput,

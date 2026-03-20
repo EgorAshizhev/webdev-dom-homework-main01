@@ -65,9 +65,21 @@ export function initHandlers(elements) {
             return;
         }
 
-        // Блокируем кнопку на время отправки
-        addButton.disabled = true;
-        addButton.textContent = "Отправка...";
+        // Сохраняем элементы формы
+        const formElements = [nameInput, commentInput, addButton];
+        
+        // Скрываем форму
+        formElements.forEach(el => {
+            if (el) el.style.display = "none";
+        });
+        
+        // Показываем лоадер отправки
+        const loaderDiv = document.createElement("div");
+        loaderDiv.className = "sending-loader";
+        loaderDiv.style.textAlign = "center";
+        loaderDiv.style.padding = "20px";
+        loaderDiv.textContent = "Отправка комментария, подождите...";
+        addButton.parentNode.insertBefore(loaderDiv, addButton);
 
         import("./api.js").then(({ postComment }) => {
             postComment(escapeHtml(text).replaceAll("\n", "<br>"), escapeHtml(name))
@@ -84,8 +96,15 @@ export function initHandlers(elements) {
                     alert(error.message || "Не удалось добавить комментарий. Попробуйте снова.");
                 })
                 .finally(() => {
-                    addButton.disabled = false;
-                    addButton.textContent = "Написать";
+                    // Убираем лоадер
+                    if (loaderDiv && loaderDiv.parentNode) {
+                        loaderDiv.remove();
+                    }
+                    
+                    // Показываем форму обратно
+                    formElements.forEach(el => {
+                        if (el) el.style.display = "";
+                    });
                 });
         });
     });
