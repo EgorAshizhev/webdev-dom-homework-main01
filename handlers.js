@@ -11,101 +11,125 @@ export function initHandlers(elements) {
         quoteBlock,
         quoteAuthor,
         quoteText,
+        loginForm,
+        logoutButton,
+        userInfo,
     } = elements;
 
     let replyingTo = null;
 
-    // Обработчик лайков и ответов на комментарии
-    commentsList.addEventListener("click", (event) => {
-        const likeButton = event.target.closest('[data-action="like"]');
+    
+    if (commentsList) {
+        commentsList.addEventListener("click", (event) => {
+            const commentElement = event.target.closest(".comment");
+            if (!commentElement) return;
 
-        if (likeButton) {
-            event.stopPropagation();
-
-            const commentElement = likeButton.closest(".comment");
             const commentId = Number(commentElement.dataset.id);
             const comment = comments.find(c => c.id === commentId);
 
             if (comment) {
-                comment.isLiked ? comment.likes-- : comment.likes++;
-                comment.isLiked = !comment.isLiked;
-                renderComments(comments, commentsList);
+                replyingTo = commentId;
+                if (quoteBlock) quoteBlock.style.display = "block";
+                if (quoteAuthor) quoteAuthor.textContent = comment.name;
+                if (quoteText) quoteText.textContent = comment.text;
+                if (commentInput) {
+                    commentInput.value = `> ${comment.text}\n\n`;
+                    commentInput.focus();
+                }
             }
-            return;
-        }
-
-        const commentElement = event.target.closest(".comment");
-        if (!commentElement) return;
-
-        const commentId = Number(commentElement.dataset.id);
-        const comment = comments.find(c => c.id === commentId);
-
-        if (comment) {
-            replyingTo = commentId;
-            quoteBlock.style.display = "block";
-            quoteAuthor.textContent = comment.name;
-            quoteText.textContent = comment.text;
-            commentInput.value = `> ${comment.text}\n\n`;
-            commentInput.focus();
-        }
-    });
-
-    // Обработчик добавления комментария
-    addButton.addEventListener("click", () => {
-        const name = nameInput.value.trim();
-        const text = commentInput.value.trim();
-
-        if (!name || !text) {
-            alert("Заполните имя и комментарий");
-            return;
-        }
-
-        if (name.length < 3 || text.length < 3) {
-            alert("Имя и текст комментария должны быть не короче 3 символов");
-            return;
-        }
-
-        // Сохраняем элементы формы
-        const formElements = [nameInput, commentInput, addButton];
-        
-        // Скрываем форму
-        formElements.forEach(el => {
-            if (el) el.style.display = "none";
         });
-        
-        // Показываем лоадер отправки
-        const loaderDiv = document.createElement("div");
-        loaderDiv.className = "sending-loader";
-        loaderDiv.style.textAlign = "center";
-        loaderDiv.style.padding = "20px";
-        loaderDiv.textContent = "Отправка комментария, подождите...";
-        addButton.parentNode.insertBefore(loaderDiv, addButton);
+    }
 
-        import("./api.js").then(({ postComment }) => {
-            postComment(escapeHtml(text).replaceAll("\n", "<br>"), escapeHtml(name))
-                .then((updatedComments) => {
-                    updateComments(updatedComments);
-                    renderComments(comments, commentsList);
+   
+    if (addButton) {
+        addButton.addEventListener("click", () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                alert("Войдите, чтобы комментировать");
+                return;
+            }
+
+            const text = commentInput ? commentInput.value.trim() : "";
+            if (!text || text.length < 3) {
+                alert("Текст комментария должен быть не короче 3 символов");
+                return;
+            }
+
+            
+            const formElements = [commentInput, addButton].filter(el => el);
+            formElements.forEach(el => {
+                if (el) el.style.display = "none";
+            });
+
+            const loaderDiv = document.createElement("div");
+            loaderDiv.className = "sending-loader";
+            loaderDiv.style.textAlign = "center";
+            loaderDiv.style.padding = "20px";
+            loaderDiv.textContent = "Отправка комментария, подождите...";
+            
+            if (addButton.parentNode) {
+                addButton.parentNode.insertBefore(loaderDiv, addButton);
+            }
+
+            import("./api.js").then(({ postComment }) => {
+                postComment(text, token)
+                    .then((updatedComments) => {
+                        updateComments(updatedComments);
+                        if (commentsList) {
+                            renderComments(comments, commentsList);
+                        }
+
+                        if (commentInput) commentInput.value = "";
+                        if (quoteBlock) quoteBlock.style.display = "none";
+                        replyingTo = null;
+                    })
+                    .catch(error => {
+                        alert(error.message || "Не удалось добавить комментарий. Попробуйте снова.");
+                    })
+                    .finally(() => {
+                        if (loaderDiv && loaderDiv.parentNode) loaderDiv.remove();
+                        formElements.forEach(el => {
+                            if (el) el.style.display = "";
+                        });
+                    });
+            });
+        });
+    }
+
+if (loginForm) {
+    loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const login = loginForm.login.value.trim();
+        const password = loginForm.password.value.trim();
+
+        if (!login || !password) {
+            alert("Заполните логин и пароль");
+            return;
+        }
+
+        import("./api.js").then(({ login: authLogin }) => {
+            authLogin(login, password)
+                .then(data => {
+                    console.log("Успешный вход:", data);
+                    localStorage.setItem("token", data.user.token);
+                    localStorage.setItem("userName", data.user.name);
                     
-                    nameInput.value = '';
-                    commentInput.value = '';
-                    quoteBlock.style.display = "none";
-                    replyingTo = null;
+                    window.location.reload();
                 })
                 .catch(error => {
-                    alert(error.message || "Не удалось добавить комментарий. Попробуйте снова.");
-                })
-                .finally(() => {
-                    // Убираем лоадер
-                    if (loaderDiv && loaderDiv.parentNode) {
-                        loaderDiv.remove();
-                    }
-                    
-                    // Показываем форму обратно
-                    formElements.forEach(el => {
-                        if (el) el.style.display = "";
-                    });
+                    console.error("Ошибка входа:", error);
+                    alert(error.message || "Ошибка авторизации. Проверьте логин и пароль");
                 });
         });
     });
+}
+
+    // Обработчик выхода
+    if (logoutButton) {
+        logoutButton.addEventListener("click", () => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("userName");
+            window.location.reload();
+        });
+    }
 }
