@@ -1,152 +1,170 @@
-import { comments, updateComments } from "./data.js";
-import { renderComments } from "./renderComments.js";
-import { initHandlers } from "./handlers.js";
-import { fetchComments } from "./api.js";
+// index.js
+import { renderAddPostPageComponent } from "./components/add-post-page-component.js";
+import { getPosts, getUserPosts } from "./api.js";
+import { renderAuthPageComponent } from "./components/auth-page-component.js";
+import {
+  ADD_POSTS_PAGE,
+  AUTH_PAGE,
+  LOADING_PAGE,
+  POSTS_PAGE,
+  USER_POSTS_PAGE,
+} from "./routes.js";
+import { renderPostsPageComponent } from "./components/posts-page-component.js";
+import { renderUserPostsPageComponent } from "./components/user-posts-page-component.js"; // ДОБАВИТЬ ЭТУ СТРОКУ
+import { renderLoadingPageComponent } from "./components/loading-page-component.js";
+import {
+  getUserFromLocalStorage,
+  removeUserFromLocalStorage,
+  saveUserToLocalStorage,
+} from "./helpers.js";
 
-// DOM элементы
-const nameInput = document.querySelector(".add-form-name");
-const commentInput = document.querySelector(".add-form-text");
-const addButton = document.querySelector(".add-form-button");
-const commentsList = document.querySelector(".comments");
-const quoteBlock = document.querySelector(".quote-block");
-const quoteAuthor = document.querySelector(".quote-author");
-const quoteText = document.querySelector(".quote-text");
+export let user = getUserFromLocalStorage();
+export let page = null;
+export let posts = [];
 
-// Находим или создаем контейнер для авторизации
-let appContainer = document.querySelector(".app") || document.querySelector(".container") || document.body;
-let loginContainer = document.querySelector(".login-container");
+const getToken = () => {
+  const token = user ? `Bearer ${user.token}` : undefined;
+  return token;
+};
 
-if (!loginContainer) {
-    loginContainer = document.createElement("div");
-    loginContainer.className = "login-container";
-    loginContainer.style.margin = "20px";
-    loginContainer.style.padding = "10px";
-    loginContainer.style.borderBottom = "1px solid #ccc";
-    
-    // Создаем форму входа
-    const loginFormHtml = `
-        <form id="login-form" style="display: inline-block;">
-            <input type="text" name="login" placeholder="Логин" required style="margin-right: 10px; padding: 5px;">
-            <input type="password" name="password" placeholder="Пароль" required style="margin-right: 10px; padding: 5px;">
-            <button type="submit" style="padding: 5px 10px;">Войти</button>
-        </form>
-    `;
-    loginContainer.innerHTML = loginFormHtml;
-    
-    // Добавляем контейнер в начало приложения
-    const addForm = document.querySelector(".add-form");
-    if (addForm) {
-        addForm.parentNode.insertBefore(loginContainer, addForm);
-    } else if (commentsList) {
-        commentsList.parentNode.insertBefore(loginContainer, commentsList);
-    } else {
-        appContainer.prepend(loginContainer);
+export const logout = () => {
+  user = null;
+  removeUserFromLocalStorage();
+  goToPage(POSTS_PAGE);
+};
+
+export const goToPage = (newPage, data) => {
+  if (
+    [
+      POSTS_PAGE,
+      AUTH_PAGE,
+      ADD_POSTS_PAGE,
+      USER_POSTS_PAGE,
+      LOADING_PAGE,
+    ].includes(newPage)
+  ) {
+    if (newPage === ADD_POSTS_PAGE) {
+      page = user ? ADD_POSTS_PAGE : AUTH_PAGE;
+      return renderApp();
     }
-}
 
-// Создаем кнопку выхода, если её нет
-let logoutButton = document.querySelector(".logout-button");
-if (!logoutButton) {
-    logoutButton = document.createElement("button");
-    logoutButton.textContent = "Выйти";
-    logoutButton.className = "logout-button";
-    logoutButton.style.padding = "5px 10px";
-    logoutButton.style.marginLeft = "10px";
-    logoutButton.style.display = "none";
-    loginContainer.appendChild(logoutButton);
-}
+    if (newPage === POSTS_PAGE) {
+      page = LOADING_PAGE;
+      renderApp();
 
-// Создаем элемент для информации о пользователе
-let userInfo = document.querySelector(".user-info");
-if (!userInfo) {
-    userInfo = document.createElement("div");
-    userInfo.className = "user-info";
-    userInfo.style.margin = "10px 0";
-    userInfo.style.fontWeight = "bold";
-    loginContainer.appendChild(userInfo);
-}
-
-const loginForm = document.querySelector("#login-form");
-
-// Состояние авторизации
-const token = localStorage.getItem("token");
-const userName = localStorage.getItem("userName");
-
-if (token && userName) {
-    // Авторизован: скрываем форму входа, показываем кнопку выхода и приветствие
-    if (loginForm) loginForm.style.display = "none";
-    logoutButton.style.display = "inline-block";
-    userInfo.textContent = `👤 Привет, ${userName}!`;
-    userInfo.style.display = "block";
-    
-    // Скрываем поле имени (оно больше не нужно)
-    if (nameInput) {
-        nameInput.style.display = "none";
+      return getPosts({ token: getToken() })
+        .then((newPosts) => {
+          page = POSTS_PAGE;
+          posts = newPosts;
+          renderApp();
+        })
+        .catch((error) => {
+          console.error(error);
+          goToPage(POSTS_PAGE);
+        });
     }
-    
-    // Включаем кнопку добавления комментария
-    if (addButton) {
-        addButton.disabled = false;
-        addButton.title = "";
-    }
-} else {
-    // Не авторизован: показываем форму входа, скрываем кнопку выхода
-    if (loginForm) loginForm.style.display = "block";
-    logoutButton.style.display = "none";
-    userInfo.style.display = "none";
-    
-    // Отключаем кнопку добавления комментария
-    if (addButton) {
-        addButton.disabled = true;
-        addButton.title = "Войдите, чтобы комментировать";
-        addButton.style.opacity = "0.5";
-        addButton.style.cursor = "not-allowed";
-    }
-    
-    // Скрываем поле имени (оно не нужно неавторизованным)
-    if (nameInput) {
-        nameInput.style.display = "none";
-    }
-    
-    // Блокируем поле ввода комментария
-    if (commentInput) {
-        commentInput.disabled = true;
-        commentInput.placeholder = "Войдите, чтобы оставить комментарий";
-        commentInput.style.opacity = "0.5";
-    }
-}
 
-// Загрузка комментариев
-if (commentsList) {
-    commentsList.innerHTML = '<div style="text-align: center; padding: 20px;">Комментарии загружаются, подождите...</div>';
-} else {
-    console.error("Элемент .comments не найден в DOM");
-}
+    if (newPage === USER_POSTS_PAGE) {
+      page = LOADING_PAGE;
+      renderApp();
 
-fetchComments(token)
-    .then((data) => {
-        updateComments(data);
-        if (commentsList) {
-            renderComments(comments, commentsList);
-        }
-    })
-    .catch((error) => {
-        console.error("Ошибка загрузки комментариев:", error);
-        if (commentsList) {
-            commentsList.innerHTML = '<div style="text-align: center; padding: 20px; color: red;">Не удалось загрузить комментарии. Обновите страницу.</div>';
-        }
+      return getUserPosts({ token: getToken(), userId: data.userId })
+        .then((userPosts) => {
+          page = USER_POSTS_PAGE;
+          posts = userPosts;
+          renderApp();
+        })
+        .catch((error) => {
+          console.error(error);
+          goToPage(POSTS_PAGE);
+        });
+    }
+
+    page = newPage;
+    renderApp();
+
+    return;
+  }
+
+  throw new Error("страницы не существует");
+};
+
+// В renderApp добавляем отображение страницы пользователя
+const renderApp = () => {
+  const appEl = document.getElementById("app");
+  if (!appEl) {
+    console.error("Element #app not found!");
+    return;
+  }
+
+  if (page === LOADING_PAGE) {
+    return renderLoadingPageComponent({
+      appEl,
+      user,
+      goToPage,
     });
+  }
 
+  if (page === AUTH_PAGE) {
+    return renderAuthPageComponent({
+      appEl,
+      setUser: (newUser) => {
+        user = newUser;
+        saveUserToLocalStorage(user);
+        goToPage(POSTS_PAGE);
+      },
+      user,
+      goToPage,
+    });
+  }
 
-initHandlers({
-    nameInput,
-    commentInput,
-    addButton,
-    commentsList,
-    quoteBlock,
-    quoteAuthor,
-    quoteText,
-    loginForm,
-    logoutButton,
-    userInfo,
-});
+  if (page === ADD_POSTS_PAGE) {
+    return renderAddPostPageComponent({
+      appEl,
+      user,
+      onAddPostClick({ description, imageUrl }) {
+        page = LOADING_PAGE;
+        renderApp();
+
+        const token = getToken();
+        
+        import("./api.js").then(({ addPost }) => {
+          addPost({ token, description, imageUrl })
+            .then(() => {
+              return getPosts({ token });
+            })
+            .then((newPosts) => {
+              posts = newPosts;
+              goToPage(POSTS_PAGE);
+            })
+            .catch((error) => {
+              console.error(error);
+              alert("Ошибка при добавлении поста: " + error.message);
+              goToPage(POSTS_PAGE);
+            });
+        });
+      },
+    });
+  }
+
+  if (page === POSTS_PAGE) {
+    return renderPostsPageComponent({
+      appEl,
+      user,
+      posts,
+      goToPage,
+    });
+  }
+
+  if (page === USER_POSTS_PAGE) {
+    return renderUserPostsPageComponent({
+      appEl,
+      user,
+      posts,
+      goToPage,
+    });
+  }
+};
+
+// Запуск приложения
+goToPage(POSTS_PAGE);

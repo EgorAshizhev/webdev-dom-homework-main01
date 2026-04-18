@@ -1,155 +1,234 @@
-body {
-  margin: 0;
+.page-container {
+  padding: 0 20px;
 }
 
-.container {
-  font-family: Helvetica;
-  color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 80px;
-  padding-bottom: 200px;
-  background: #202020;
-  min-height: 100vh;
-}
-
-.comments,
-.comment {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.comment,
-.add-form {
-  width: 596px;
-  box-sizing: border-box;
-  background: radial-gradient(75.42% 75.42% at 50% 42.37%,
-      rgba(53, 53, 53, 0) 22.92%,
-      #7334ea 100%);
-  filter: drop-shadow(0px 20px 67px rgba(0, 0, 0, 0.08));
-  border-radius: 20px;
-}
-
-.comments {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.comment {
-  cursor: pointer;
-  padding: 48px;
-}
-
-.comment-header {
-  font-size: 16px;
+.page-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 20px 16px;
+  margin-left: -20px;
+  margin-right: -20px;
 }
 
-.comment-footer {
+.logo {
+  margin: 0;
+  font-size: 28px;
+  cursor: pointer;
+  width: 130px;
+}
+
+.header-container {
+  margin-bottom: 8px;
+}
+
+.header-button {
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.logout-button {
+  width: 130px;
+  text-align: right;
+}
+
+.posts {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.comment-body {
-  margin-top: 32px;
-  margin-bottom: 32px;
-}
-
-.comment-text {
-  font-size: 32px;
-}
-
-.likes {
+.post-header {
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.post-header__user-image {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 40px;
+  margin-right: 10px;
+}
+
+.post-image-container {
+  margin-left: -20px;
+  margin-right: -20px;
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  background-color: #e0e0e0;
+}
+
+.post-image {
+  width: 100%;
+  height: 100%;
+  max-width: 500px;
+  object-fit: cover;
+}
+
+.post-likes {
+  display: flex;
+  flex-direction: row;
   align-items: center;
 }
 
 .like-button {
-  all: unset;
+  border: none;
+  background-color: transparent;
+  padding: 8px;
+  padding-left: 0px;
+  padding-bottom: 5px;
   cursor: pointer;
 }
 
-.likes-counter {
-  font-size: 26px;
-  margin-right: 8px;
+.user-name {
+  font-weight: 500;
 }
 
-.like-button {
-  margin-left: 10px;
-  background-image: url("data:image/svg+xml,%3Csvg width='22' height='20' viewBox='0 0 22 20' fill='none' xmlns='http://www.w3.org/2000/svg' %3E%3Cpath d='M11.11 16.9482L11 17.0572L10.879 16.9482C5.654 12.2507 2.2 9.14441 2.2 5.99455C2.2 3.81471 3.85 2.17984 6.05 2.17984C7.744 2.17984 9.394 3.26975 9.977 4.75204H12.023C12.606 3.26975 14.256 2.17984 15.95 2.17984C18.15 2.17984 19.8 3.81471 19.8 5.99455C19.8 9.14441 16.346 12.2507 11.11 16.9482ZM15.95 0C14.036 0 12.199 0.882834 11 2.26703C9.801 0.882834 7.964 0 6.05 0C2.662 0 0 2.6267 0 5.99455C0 10.1035 3.74 13.4714 9.405 18.5613L11 20L12.595 18.5613C18.26 13.4714 22 10.1035 22 5.99455C22 2.6267 19.338 0 15.95 0Z' fill='%23BCEC30' /%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  width: 22px;
-  height: 22px;
+.post-text {
+  font-size: 14px;
+  line-height: 18px;
+  margin-top: 5px;
 }
 
-.-active-like {
-  background-image: url("data:image/svg+xml,%3Csvg width='22' height='20' viewBox='0 0 22 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.95 0C14.036 0 12.199 0.882834 11 2.26703C9.801 0.882834 7.964 0 6.05 0C2.662 0 0 2.6267 0 5.99455C0 10.1035 3.74 13.4714 9.405 18.5613L11 20L12.595 18.5613C18.26 13.4714 22 10.1035 22 5.99455C22 2.6267 19.338 0 15.95 0Z' fill='%23BCEC30'/%3E%3C/svg%3E");
+.post-date {
+  color: #8a8a8a;
 }
 
-.add-form {
-  padding: 20px;
-  margin-top: 48px;
+.post + .post {
+  margin-top: 20px;
+}
+
+.posts-user-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.posts-user-header__user-image {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 40px;
+  margin-right: 10px;
+}
+
+.posts-user-header__user-name {
+  font-size: 28px;
+  line-height: 35px;
+}
+
+.loading-page {
+  display: flex;
+  justify-content: center;
+  margin-top: 100px;
+}
+
+.add-post-sign {
+  background-image: url("data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 122.88 122.88'%3E%3Ctitle%3Eadd%3C/title%3E%3Cpath d='M61.44,0A61.46,61.46,0,1,1,18,18,61.25,61.25,0,0,1,61.44,0ZM88.6,56.82v9.24a4,4,0,0,1-4,4H70V84.62a4,4,0,0,1-4,4H56.82a4,4,0,0,1-4-4V70H38.26a4,4,0,0,1-4-4V56.82a4,4,0,0,1,4-4H52.84V38.26a4,4,0,0,1,4-4h9.24a4,4,0,0,1,4,4V52.84H84.62a4,4,0,0,1,4,4Zm8.83-31.37a50.92,50.92,0,1,0,14.9,36,50.78,50.78,0,0,0-14.9-36Z'/%3E%3C/svg%3E");
+  height: 30px;
+  width: 30px;
+}
+
+.form {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
-.add-form-name,
-.add-form-text {
-  font-size: 16px;
-  font-family: Helvetica;
-  border-radius: 8px;
-  border: none;
+.form-title {
+  font-size: 28px;
+  line-height: 35px;
+  text-align: center;
 }
 
-.add-form-name {
-  width: 300px;
-  padding: 11px 22px;
-}
-
-.add-form-text {
-  margin-top: 12px;
-  padding: 22px;
-  resize: none;
-}
-
-.add-form-row {
+.form-inputs {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.add-form-button {
-  margin-top: 24px;
-  font-size: 24px;
-  padding: 10px 20px;
-  background-color: #bcec30;
+.form-error {
+  color: red;
+}
+
+.form-footer {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-footer-title {
+  text-align: center;
+}
+
+.file-upload-image-conrainer {
+  display: flex;
+  align-items: center;
+}
+
+.file-upload-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-right: 10px;
+  border: 1px solid gray;
+  border-radius: 5px;
+}
+
+.file-upload-label {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%;
+  text-align: center;
+}
+
+/* Добавьте в ваш CSS файл */
+.delete-post-button {
+  background: none;
   border: none;
-  border-radius: 18px;
+  font-size: 20px;
   cursor: pointer;
+  margin-left: auto;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
 }
 
-.add-form-button:hover {
-  opacity: 0.9;
+.delete-post-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
-.quote-block {
-  background-color: #f9f9f9;
-  border-left: 4px solid #ccc;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 4px;
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 12px;
 }
 
-.quote-header {
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #555;
+.post-header:hover {
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
-.quote-text {
-  color: #777;
-  font-style: italic;
+.page-title {
+  padding: 20px;
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  border-bottom: 1px solid #dbdbdb;
 }
