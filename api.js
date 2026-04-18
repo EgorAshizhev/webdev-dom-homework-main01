@@ -110,7 +110,6 @@ export function addPost({ token, description, imageUrl }) {
     method: "POST",
     headers: {
       'Authorization': token,
-      'Content-Type': 'application/json',
     },
     body: JSON.stringify(postData),
   })
