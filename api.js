@@ -69,3 +69,28 @@ export const login = (login, password) => {
         return response.json();
     });
 };
+
+export const toggleLike = (commentId, token) => {
+    return fetch(baseUrl + "/comments/" + commentId + "/toggle-like", {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            // Убираем Content-Type! API не умеет с ним работать
+        },
+        // Не отправляем body, так как это POST без тела
+    }).then((response) => {
+        if (!response.ok) {
+            return response.text().then(body => {
+                let message;
+                try {
+                    const err = JSON.parse(body);
+                    message = err.error || "Ошибка при изменении лайка";
+                } catch {
+                    message = body || "Ошибка при изменении лайка";
+                }
+                throw new Error(message);
+            });
+        }
+        return response.json();
+    });
+};
