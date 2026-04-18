@@ -124,7 +124,6 @@ export function renderAuthPageComponent({ appEl, setUser, user, goToPage }) {
             setError(error.message);
           });
       } else {
-и
         const login = document.getElementById("login-input").value;
         const name = document.getElementById("name-input").value;
         const password = document.getElementById("password-input").value;
