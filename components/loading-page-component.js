@@ -22,7 +22,6 @@ export function renderLoadingPageComponent({ appEl, user, goToPage }) {
                 </div>
               </div>`;
 
-  // Устанавливаем разметку в корневой элемент приложения
   appEl.innerHTML = appHtml;
 
   /**

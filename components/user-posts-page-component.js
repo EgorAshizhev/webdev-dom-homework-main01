@@ -1,4 +1,4 @@
-// user-posts-page-component.js
+
 import { renderHeaderComponent } from "./header-component.js";
 import { renderPostCard } from "./post-card-component.js";
 import { likePost, dislikePost, deletePost, getUserPosts } from "../api.js";
@@ -22,7 +22,7 @@ export function renderUserPostsPageComponent({ appEl, user, posts, goToPage }) {
     goToPage,
   });
 
-  // Обработчики для кликов по пользователям
+
   for (let userEl of document.querySelectorAll(".post-header")) {
     userEl.addEventListener("click", (e) => {
       if (!e.target.classList.contains('delete-post-button')) {
@@ -34,7 +34,7 @@ export function renderUserPostsPageComponent({ appEl, user, posts, goToPage }) {
     });
   }
 
-  // Обработчики для лайков
+
   for (let likeButton of document.querySelectorAll(".like-button")) {
     likeButton.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -79,7 +79,7 @@ export function renderUserPostsPageComponent({ appEl, user, posts, goToPage }) {
     });
   }
 
-  // Обработчики для удаления постов
+
   for (let deleteButton of document.querySelectorAll(".delete-post-button")) {
     deleteButton.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -89,7 +89,7 @@ export function renderUserPostsPageComponent({ appEl, user, posts, goToPage }) {
       if (confirm("Вы уверены, что хотите удалить этот пост?")) {
         deletePost({ token, postId })
           .then(() => {
-            // Получаем userId из URL или сохраняем его
+
             const userId = posts[0]?.user?.id;
             if (userId) {
               return getUserPosts({ token, userId });

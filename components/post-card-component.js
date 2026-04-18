@@ -1,4 +1,3 @@
-// post-card-component.js
 import { formatDistanceToNow } from 'https://cdn.skypack.dev/date-fns';
 import { ru } from 'https://cdn.skypack.dev/date-fns/locale';
 
@@ -47,7 +46,6 @@ export function renderPostCard(post, currentUser, goToPage) {
   `;
 }
 
-// Функция для экранирования HTML
 function escapeHtml(str) {
   if (!str) return '';
   return str

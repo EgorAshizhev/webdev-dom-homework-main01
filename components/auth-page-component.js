@@ -80,14 +80,12 @@ export function renderAuthPageComponent({ appEl, setUser, user, goToPage }) {
       appEl.querySelector(".form-error").textContent = message;
     };
 
-    // Рендерим заголовок страницы
     renderHeaderComponent({
       element: document.querySelector(".header-container"),
-      user,      // добавлено
-      goToPage,  // добавлено
+      user,      
+      goToPage,  
     });
 
-    // Если режим регистрации, рендерим компонент загрузки изображения
     const uploadImageContainer = appEl.querySelector(".upload-image-container");
     if (uploadImageContainer) {
       renderUploadImageComponent({
@@ -98,12 +96,12 @@ export function renderAuthPageComponent({ appEl, setUser, user, goToPage }) {
       });
     }
 
-    // Обработка клика на кнопку входа/регистрации
+
     document.getElementById("login-button").addEventListener("click", () => {
       setError("");
 
       if (isLoginMode) {
-        // Обработка входа
+      
         const login = document.getElementById("login-input").value;
         const password = document.getElementById("password-input").value;
 
@@ -126,7 +124,7 @@ export function renderAuthPageComponent({ appEl, setUser, user, goToPage }) {
             setError(error.message);
           });
       } else {
-        // Обработка регистрации
+и
         const login = document.getElementById("login-input").value;
         const name = document.getElementById("name-input").value;
         const password = document.getElementById("password-input").value;
@@ -162,13 +160,12 @@ export function renderAuthPageComponent({ appEl, setUser, user, goToPage }) {
       }
     });
 
-    // Обработка переключения режима (вход ↔ регистрация)
     document.getElementById("toggle-button").addEventListener("click", () => {
       isLoginMode = !isLoginMode;
-      renderForm(); // Перерисовываем форму с новым режимом
+      renderForm();
     });
   };
 
-  // Инициализация формы
+
   renderForm();
 }

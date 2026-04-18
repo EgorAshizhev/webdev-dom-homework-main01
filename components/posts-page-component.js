@@ -1,4 +1,4 @@
-// posts-page-component.js
+
 import { renderHeaderComponent } from "./header-component.js";
 import { renderPostCard } from "./post-card-component.js";
 import { likePost, dislikePost, deletePost, getPosts } from "../api.js";
@@ -21,10 +21,10 @@ export function renderPostsPageComponent({ appEl, user, posts, goToPage }) {
     goToPage,
   });
 
-  // Добавляем обработчики для кликов по пользователям
+
   for (let userEl of document.querySelectorAll(".post-header")) {
     userEl.addEventListener("click", (e) => {
-      // Если кликнули не на кнопку удаления
+  
       if (!e.target.classList.contains('delete-post-button')) {
         const userId = userEl.dataset.userId;
         if (userId) {
@@ -34,7 +34,6 @@ export function renderPostsPageComponent({ appEl, user, posts, goToPage }) {
     });
   }
 
-  // Добавляем обработчики для лайков
   for (let likeButton of document.querySelectorAll(".like-button")) {
     likeButton.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -52,12 +51,12 @@ export function renderPostsPageComponent({ appEl, user, posts, goToPage }) {
       if (isCurrentlyLiked) {
         dislikePost({ token, postId })
           .then(updatedPost => {
-            // Обновляем пост в массиве
+
             const index = posts.findIndex(p => p.id === postId);
             if (index !== -1) {
               posts[index] = updatedPost;
             }
-            // Перерисовываем страницу
+  
             renderPostsPageComponent({ appEl, user, posts, goToPage });
           })
           .catch(error => {
@@ -81,7 +80,7 @@ export function renderPostsPageComponent({ appEl, user, posts, goToPage }) {
     });
   }
 
-  // Добавляем обработчики для удаления постов
+
   for (let deleteButton of document.querySelectorAll(".delete-post-button")) {
     deleteButton.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -91,7 +90,7 @@ export function renderPostsPageComponent({ appEl, user, posts, goToPage }) {
       if (confirm("Вы уверены, что хотите удалить этот пост?")) {
         deletePost({ token, postId })
           .then(() => {
-            // Обновляем список постов
+
             const token = user ? `Bearer ${user.token}` : undefined;
             return getPosts({ token });
           })
