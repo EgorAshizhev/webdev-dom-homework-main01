@@ -1,4 +1,4 @@
-// index.js
+
 import { renderAddPostPageComponent } from "./components/add-post-page-component.js";
 import { getPosts, getUserPosts } from "./api.js";
 import { renderAuthPageComponent } from "./components/auth-page-component.js";
@@ -10,7 +10,7 @@ import {
   USER_POSTS_PAGE,
 } from "./routes.js";
 import { renderPostsPageComponent } from "./components/posts-page-component.js";
-import { renderUserPostsPageComponent } from "./components/user-posts-page-component.js"; // ДОБАВИТЬ ЭТУ СТРОКУ
+import { renderUserPostsPageComponent } from "./components/user-posts-page-component.js";
 import { renderLoadingPageComponent } from "./components/loading-page-component.js";
 import {
   getUserFromLocalStorage,
@@ -88,8 +88,6 @@ export const goToPage = (newPage, data) => {
 
   throw new Error("страницы не существует");
 };
-
-// В renderApp добавляем отображение страницы пользователя
 const renderApp = () => {
   const appEl = document.getElementById("app");
   if (!appEl) {
@@ -166,5 +164,4 @@ const renderApp = () => {
   }
 };
 
-// Запуск приложения
 goToPage(POSTS_PAGE);

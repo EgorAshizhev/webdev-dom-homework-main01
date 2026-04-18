@@ -1,4 +1,4 @@
-// add-post-page-component.js
+
 import { renderHeaderComponent } from "./header-component.js";
 import { renderUploadImageComponent } from "./upload-image-component.js";
 
@@ -35,7 +35,7 @@ export function renderAddPostPageComponent({ appEl, user, onAddPostClick }) {
       user,
     });
 
-    // Рендерим компонент загрузки изображения
+
     const uploadImageContainer = appEl.querySelector(".upload-image-container");
     if (uploadImageContainer) {
       renderUploadImageComponent({
@@ -53,7 +53,6 @@ export function renderAddPostPageComponent({ appEl, user, onAddPostClick }) {
       }
     };
 
-    // Обработчик добавления поста
     document.getElementById("add-button").addEventListener("click", () => {
       setError("");
       
@@ -80,9 +79,9 @@ export function renderAddPostPageComponent({ appEl, user, onAddPostClick }) {
       });
     });
 
-    // Обработчик отмены
+
     document.getElementById("cancel-button").addEventListener("click", () => {
-      // Импортируем goToPage из index
+
       import("../index.js").then(({ goToPage }) => {
         goToPage("posts");
       });

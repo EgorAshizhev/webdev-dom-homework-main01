@@ -43,13 +43,13 @@ export function renderUploadImageComponent({ element, onImageUrlChange }) {
       fileInputElement.addEventListener("change", () => {
         const file = fileInputElement.files[0];
         if (file) {
-          // Проверка размера файла (до 5MB)
+          
           if (file.size > 5 * 1024 * 1024) {
             alert("Файл слишком большой. Максимум 5MB");
             return;
           }
           
-          // Проверка типа файла
+      
           if (!file.type.startsWith('image/')) {
             alert("Пожалуйста, выберите изображение");
             return;
@@ -63,7 +63,7 @@ export function renderUploadImageComponent({ element, onImageUrlChange }) {
           
           uploadImage({ file })
             .then(({ fileUrl }) => {
-              console.log("Получен URL:", fileUrl); // Для отладки
+              console.log("Получен URL:", fileUrl);
               if (!fileUrl) {
                 throw new Error("Не получен URL изображения");
               }
@@ -74,7 +74,7 @@ export function renderUploadImageComponent({ element, onImageUrlChange }) {
             .catch((error) => {
               console.error("Ошибка загрузки:", error);
               alert("Ошибка при загрузке изображения: " + error.message);
-              // Сбрасываем состояние
+          
               if (labelEl) {
                 labelEl.removeAttribute("disabled");
                 labelEl.textContent = "Выберите фото";

@@ -1,5 +1,3 @@
-// Замени на свой, чтобы получить независимый от других набор данных.
-// "боевая" версия инстапро лежит в ключе prod
 const personalKey = "prod";
 const baseHost = "https://webdev-hw-api.vercel.app";
 const postsHost = `${baseHost}/api/v1/${personalKey}/instapro`;
@@ -55,7 +53,6 @@ export function loginUser({ login, password }) {
   });
 }
 
-// Загружает картинку в облако, возвращает url загруженной картинки
 export function uploadImage({ file }) {
   const data = new FormData();
   data.append("file", file);
@@ -71,8 +68,7 @@ export function uploadImage({ file }) {
       return response.json();
     })
     .then((data) => {
-      console.log("Загруженное изображение:", data); // Для отладки
-      // Проверяем структуру ответа
+      console.log("Загруженное изображение:", data); 
       if (data.fileUrl) {
         return { fileUrl: data.fileUrl };
       } else if (data.url) {
@@ -83,25 +79,17 @@ export function uploadImage({ file }) {
     });
 }
 
-
-
-// api.js - добавляем новые функции
-
-// Добавление нового поста
 export function addPost({ token, description, imageUrl }) {
-  // Очищаем URL от лишних символов
   const cleanImageUrl = imageUrl.trim();
   const cleanDescription = description.trim();
   
   console.log("Отправляем данные:", { description: cleanDescription, imageUrl: cleanImageUrl });
   
-  // Проверяем, что URL начинается с http:// или https://
+
   if (!cleanImageUrl.startsWith('http://') && !cleanImageUrl.startsWith('https://')) {
     return Promise.reject(new Error("Неверный URL изображения"));
   }
 
-  // Пробуем разные варианты формата данных
-  // Вариант 1: как в документации
   const postData = {
     description: cleanDescription,
     imageUrl: cleanImageUrl
@@ -133,7 +121,6 @@ export function addPost({ token, description, imageUrl }) {
     });
 }
 
-// Получение постов конкретного пользователя
 export function getUserPosts({ token, userId }) {
   return fetch(`${postsHost}/user-posts/${userId}`, {
     method: "GET",
@@ -152,7 +139,6 @@ export function getUserPosts({ token, userId }) {
     });
 }
 
-// Поставить лайк
 export function likePost({ token, postId }) {
   return fetch(`${postsHost}/${postId}/like`, {
     method: "POST",
@@ -171,7 +157,6 @@ export function likePost({ token, postId }) {
     });
 }
 
-// Убрать лайк
 export function dislikePost({ token, postId }) {
   return fetch(`${postsHost}/${postId}/dislike`, {
     method: "POST",
@@ -190,7 +175,6 @@ export function dislikePost({ token, postId }) {
     });
 }
 
-// Удалить пост
 export function deletePost({ token, postId }) {
   return fetch(`${postsHost}/${postId}`, {
     method: "DELETE",
